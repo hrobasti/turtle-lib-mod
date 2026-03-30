@@ -1,0 +1,114 @@
+name: Bug Report
+description: Share reproducible problems so we can fix them quickly.
+labels: [bug]
+title: "[Bug] <short summary>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue!
+        TurtleLib is a shared mod library, so integration context is important for debugging.
+  - type: input
+    id: minecraft_version
+    attributes:
+      label: Minecraft Version
+      description: The exact Minecraft version used by the affected setup.
+      placeholder: "1.21.11"
+    validations:
+      required: true
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Loader
+      description: Which loader is affected?
+      options:
+        - Fabric
+        - NeoForge
+    validations:
+      required: true
+  - type: input
+    id: turtlelib_version
+    attributes:
+      label: TurtleLib Version
+      description: Which TurtleLib version are you using? If built from source, include commit hash.
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: consuming_mod
+    attributes:
+      label: Consuming Mod
+      description: Which mod is using TurtleLib when the issue happens?
+      placeholder: "PermaClicker"
+    validations:
+      required: true
+  - type: input
+    id: consuming_mod_version
+    attributes:
+      label: Consuming Mod Version
+      description: Version of the mod that depends on TurtleLib.
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: Your OS and version.
+      placeholder: "Windows 11 / Ubuntu 24.04 / macOS 15"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+      placeholder: Clear and concise description.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a numbered list of steps that reliably reproduces the issue.
+      placeholder: |
+        1. Install TurtleLib + consuming mod.
+        2. Start client with loader ...
+        3. Trigger feature/path using TurtleLib ...
+        4. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+      description: Describe the expected behavior.
+      placeholder: Expected behavior description.
+    validations:
+      required: true
+  - type: textarea
+    id: minimal_context
+    attributes:
+      label: Minimal Integration Context
+      description: Share relevant setup details (API usage, init path, affected class/method, or a minimal snippet).
+      placeholder: |
+        - Affected API: ...
+        - Called from: ...
+        - Optional snippet: ...
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Log Output
+      description: Paste stack traces or relevant loader/client logs (use code fences).
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional Context
+      description: Add any other context or screenshots that might help.
+    validations:
+      required: false

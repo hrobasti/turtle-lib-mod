@@ -1,0 +1,122 @@
+plugins {
+    id 'java-library'
+}
+
+def versionProperties = new Properties()
+def versionFile = file('../version.properties')
+if (versionFile.exists()) {
+    versionFile.withInputStream { versionProperties.load(it) }
+}
+def versionFromFile = versionProperties.getProperty('version')
+
+def sharedWorkspaceProperties = new Properties()
+def sharedWorkspaceGradlePropertiesFile = file('../../../gradle.properties')
+if (sharedWorkspaceGradlePropertiesFile.exists()) {
+    sharedWorkspaceGradlePropertiesFile.withInputStream { sharedWorkspaceProperties.load(it) }
+}
+
+def requireConfigValue = { String key, String value ->
+    if (value == null || value.isBlank()) {
+        throw new GradleException("Missing required TurtleLib Fabric config value '${key}'. Provide it via Gradle property or root gradle.properties.")
+    }
+    value
+}
+
+def resolvedTurtleLibName = providers.gradleProperty('turtlelib_name').getOrElse(sharedWorkspaceProperties.getProperty('turtlelib_name', 'TurtleLib'))
+def resolvedMinecraftVersionRaw = providers.gradleProperty('turtlelib_minecraft_version')
+    .orElse(providers.gradleProperty('minecraft_version'))
+    .getOrElse(sharedWorkspaceProperties.getProperty('turtlelib_minecraft_version', sharedWorkspaceProperties.getProperty('minecraft_version')))
+def resolvedMinecraftVersion = requireConfigValue('turtlelib_minecraft_version|minecraft_version', resolvedMinecraftVersionRaw)
+
+def resolvedFabricLoaderVersionRaw = providers.gradleProperty('turtlelib_fabric_loader_version')
+    .orElse(providers.gradleProperty('fabric_loader_version'))
+    .getOrElse(sharedWorkspaceProperties.getProperty('turtlelib_fabric_loader_version', sharedWorkspaceProperties.getProperty('fabric_loader_version')))
+def resolvedFabricLoaderVersion = requireConfigValue('turtlelib_fabric_loader_version|fabric_loader_version', resolvedFabricLoaderVersionRaw)
+
+def resolvedJavaLanguageVersion = providers.gradleProperty('java_language_version').orElse('21').get()
+def libNameForFile = (resolvedTurtleLibName as String).replaceAll(/[^A-Za-z0-9]/, '')
+def mcVersionForFile = (resolvedMinecraftVersion as String).replace('.', '-')
+def fabricVersionForFile = (resolvedFabricLoaderVersion as String).replace('.', '-').replace('+', '-').replace('_', '-')
+def modLicenseFile = file('../LICENSE')
+def turtleLibDistDir = layout.projectDirectory.dir('../dist')
+def turtleLibDistSourcesDir = layout.projectDirectory.dir('../dist/sources')
+
+group = providers.gradleProperty('turtlelib_group').getOrElse('com.github.hrobasti.turtlelib')
+version = providers.gradleProperty('turtlelib_version').orElse(versionFromFile ?: '0.1').get()
+
+java {
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api 'com.google.code.gson:gson:2.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
+}
+
+tasks.named('processResources', ProcessResources) {
+    inputs.property('version', project.version)
+    inputs.property('fabric_loader_version', resolvedFabricLoaderVersion)
+    inputs.property('minecraft_version', resolvedMinecraftVersion)
+    inputs.property('java_language_version', resolvedJavaLanguageVersion)
+
+    filesMatching('fabric.mod.json') {
+        expand([
+            version               : project.version,
+            fabric_loader_version : resolvedFabricLoaderVersion,
+            minecraft_version     : resolvedMinecraftVersion,
+            java_language_version : resolvedJavaLanguageVersion
+        ])
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+tasks.register('copyTurtleLibFabricArtifactsToDist', Copy) {
+    from(layout.buildDirectory.dir('libs')) {
+        include '*_MC-*_FABRIC_*.jar'
+        exclude '*-source.jar', '*-sources.jar'
+    }
+
+    from(layout.buildDirectory.dir('libs')) {
+        include '*_MC-*_FABRIC_*-source.jar', '*_MC-*_FABRIC_*-sources.jar'
+        into 'sources'
+    }
+
+    into(layout.projectDirectory.dir('../dist'))
+}
+
+tasks.named('jar') {
+    from(modLicenseFile) {
+        into 'META-INF'
+        rename { 'LICENSE' }
+    }
+
+    destinationDirectory = turtleLibDistDir
+    archiveFileName = "${libNameForFile}_${project.version}_MC-${mcVersionForFile}_FABRIC_${fabricVersionForFile}.jar"
+    finalizedBy(tasks.named('copyTurtleLibFabricArtifactsToDist'))
+    manifest {
+        attributes(
+            'Implementation-Title': providers.gradleProperty('turtlelib_name').getOrElse('TurtleLib'),
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': 'hrobasti'
+        )
+    }
+}
+
+tasks.named('sourcesJar') {
+    from(modLicenseFile) {
+        into 'META-INF'
+        rename { 'LICENSE' }
+    }
+
+    destinationDirectory = turtleLibDistSourcesDir
+    archiveFileName = "${libNameForFile}_${project.version}_MC-${mcVersionForFile}_FABRIC_${fabricVersionForFile}-source.jar"
+    finalizedBy(tasks.named('copyTurtleLibFabricArtifactsToDist'))
+}
