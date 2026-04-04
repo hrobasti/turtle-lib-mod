@@ -23,12 +23,12 @@ If TurtleLib is missing, dependent mods may fail to load.
 
 ## Build quickstart (developers) 🛠️
 
-TurtleLib ships loader-local Gradle wrappers, so no global Gradle install is required.
+Use the workspace root wrapper for all build/test tasks.
 
-- Fabric build entrypoints: `fabric/gradlew` (Linux/macOS), `fabric/gradlew.bat` (Windows)
-- NeoForge build entrypoints: `neoforge/gradlew` (Linux/macOS), `neoforge/gradlew.bat` (Windows)
+- TurtleLib full matrix build: `./gradlew releaseTurtleLib`
+- Typical checks: `./gradlew verifyMatrixTargets`, `./gradlew tasks`
 
-Typical tasks: `build`, `test`, `tasks`.
+No loader-local wrapper scripts are required.
 
 ## AI support & privacy transparency 🤖
 
