@@ -1,10 +1,11 @@
-# Turtle Lib Mod Fabric
+# TurtleLib – Fabric
 
-Fabric-spezifische Spiegelung der gemeinsamen TurtleLib-Helfer:
+Thin Fabric packaging module for TurtleLib.
 
-- `com.github.hrobasti.turtlelib.lang.LangLoader`
-- `com.github.hrobasti.turtlelib.update.UpdateChecker`
-- `com.github.hrobasti.turtlelib.version.VersionComparator`
+All library code lives in the shared `:turtlelib-core` module (pure Java + Gson,
+with no Minecraft/loader classes). This module only carries the Fabric mod
+metadata (`fabric.mod.json`) and bundles the compiled core classes into the
+distributable Fabric jar.
 
-Der Code ist loader-neutral gehalten, damit die gleichen Hilfsklassen in Forge/Fabric/NeoForge konsistent nutzbar sind.
-
+- Helper API and usage: see [`../wiki/helper-api.md`](../wiki/helper-api.md)
+- Shared source of truth for the code: [`../core`](../core)

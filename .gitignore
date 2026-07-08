@@ -45,3 +45,6 @@ crash-reports/
 **/isolated/
 **/loom-cache/
 **/devlibs/
+
+# Claude Code local ruleset (kept out of version control)
+CLAUDE.md

@@ -42,6 +42,10 @@ def modLicenseFile = file('../LICENSE')
 def turtleLibDistDir = layout.projectDirectory.dir('../dist')
 def turtleLibDistSourcesDir = layout.projectDirectory.dir('../dist/sources')
 
+// Shared, loader-neutral library code lives in :turtlelib-core. This module only
+// carries NeoForge metadata and packaging, and bundles the compiled core classes/sources.
+def turtleLibCore = project(':turtlelib-core')
+
 group = providers.gradleProperty('turtlelib_group').getOrElse('com.github.hrobasti.turtlelib')
 version = providers.gradleProperty('turtlelib_version').orElse(versionFromFile ?: '0.1').get()
 
@@ -54,9 +58,7 @@ repositories {
 }
 
 dependencies {
-    api 'com.google.code.gson:gson:2.10.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
+    api project(':turtlelib-core')
 }
 
 tasks.named('processResources', ProcessResources) {
@@ -100,11 +102,9 @@ tasks.register('copyTurtleLibNeoForgeArtifactsToDist', Copy) {
     into(layout.projectDirectory.dir('../dist'))
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 tasks.named('jar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(turtleLibCore.sourceSets.main.output)
     from(modLicenseFile) {
         into 'META-INF'
         rename { 'LICENSE' }
@@ -123,6 +123,7 @@ tasks.named('jar') {
 }
 
 tasks.named('sourcesJar') {
+    from(turtleLibCore.sourceSets.main.allSource)
     from(modLicenseFile) {
         into 'META-INF'
         rename { 'LICENSE' }

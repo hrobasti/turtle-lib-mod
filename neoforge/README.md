@@ -1,9 +1,11 @@
-# Turtle Lib Mod NeoForge
+# TurtleLib – NeoForge
 
-NeoForge-specific mirror of shared TurtleLib helpers:
+Thin NeoForge packaging module for TurtleLib.
 
-- `com.github.hrobasti.turtlelib.lang.LangLoader`
-- `com.github.hrobasti.turtlelib.update.UpdateChecker`
-- `com.github.hrobasti.turtlelib.version.VersionComparator`
+All library code lives in the shared `:turtlelib-core` module (pure Java + Gson,
+with no Minecraft/loader classes). This module only carries the NeoForge mod
+metadata (`META-INF/neoforge.mods.toml`) and bundles the compiled core classes
+into the distributable NeoForge jar.
 
-The code is kept loader-neutral so the same helper classes can be used consistently across Forge/Fabric/NeoForge.
+- Helper API and usage: see [`../wiki/helper-api.md`](../wiki/helper-api.md)
+- Shared source of truth for the code: [`../core`](../core)
