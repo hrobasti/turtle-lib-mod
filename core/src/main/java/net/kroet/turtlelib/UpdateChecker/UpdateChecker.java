@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.kroet.turtlelib.VersionComparator.VersionComparator;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -13,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
+import net.kroet.turtlelib.VersionComparator.VersionComparator;
 
 /**
  * Loader-neutral update checker for Modrinth and CurseForge.
@@ -36,13 +36,12 @@ public final class UpdateChecker {
     }
 
     public UpdateChecker(
-        String userAgent,
-        String modrinthProjectId,
-        String curseforgeProjectId,
-        boolean includePrereleases,
-        boolean filterByMinecraftVersion,
-        String minecraftVersion
-    ) {
+            String userAgent,
+            String modrinthProjectId,
+            String curseforgeProjectId,
+            boolean includePrereleases,
+            boolean filterByMinecraftVersion,
+            String minecraftVersion) {
         this.userAgent = userAgent;
         this.modrinthProjectId = modrinthProjectId;
         this.curseforgeProjectId = curseforgeProjectId;
@@ -52,18 +51,17 @@ public final class UpdateChecker {
         this.minecraftVersion = normalizeMinecraftVersion(minecraftVersion);
         this.minecraftVersionLower = this.minecraftVersion == null ? null : this.minecraftVersion.toLowerCase(Locale.ROOT);
         this.minecraftVersionPrefixLower = this.minecraftVersion == null
-            ? null
-            : deriveMinorPrefix(this.minecraftVersion).toLowerCase(Locale.ROOT);
+                ? null
+                : deriveMinorPrefix(this.minecraftVersion).toLowerCase(Locale.ROOT);
     }
 
     public UpdateChecker(
-        String userAgent,
-        String modrinthProjectId,
-        String curseforgeProjectId,
-        UpdateReleaseChannel releaseChannel,
-        boolean filterByMinecraftVersion,
-        String minecraftVersion
-    ) {
+            String userAgent,
+            String modrinthProjectId,
+            String curseforgeProjectId,
+            UpdateReleaseChannel releaseChannel,
+            boolean filterByMinecraftVersion,
+            String minecraftVersion) {
         this.userAgent = userAgent;
         this.modrinthProjectId = modrinthProjectId;
         this.curseforgeProjectId = curseforgeProjectId;
@@ -73,8 +71,8 @@ public final class UpdateChecker {
         this.minecraftVersion = normalizeMinecraftVersion(minecraftVersion);
         this.minecraftVersionLower = this.minecraftVersion == null ? null : this.minecraftVersion.toLowerCase(Locale.ROOT);
         this.minecraftVersionPrefixLower = this.minecraftVersion == null
-            ? null
-            : deriveMinorPrefix(this.minecraftVersion).toLowerCase(Locale.ROOT);
+                ? null
+                : deriveMinorPrefix(this.minecraftVersion).toLowerCase(Locale.ROOT);
     }
 
     public UpdateResult check(String currentVersion) {
@@ -217,11 +215,11 @@ public final class UpdateChecker {
         }
 
         String versionNumber = version.has("version_number") && version.get("version_number").isJsonPrimitive()
-            ? version.get("version_number").getAsString()
-            : "";
+                ? version.get("version_number").getAsString()
+                : "";
         String name = version.has("name") && version.get("name").isJsonPrimitive()
-            ? version.get("name").getAsString()
-            : "";
+                ? version.get("name").getAsString()
+                : "";
 
         return isLikelyAlphaTag(versionNumber) || isLikelyAlphaTag(name);
     }
@@ -259,9 +257,9 @@ public final class UpdateChecker {
             return false;
         }
         return lower.equals(minecraftVersionPrefixLower)
-            || lower.startsWith(minecraftVersionPrefixLower + ".")
-            || lower.equals(minecraftVersionPrefixLower + ".x")
-            || lower.equals(minecraftVersionPrefixLower + "x");
+                || lower.startsWith(minecraftVersionPrefixLower + ".")
+                || lower.equals(minecraftVersionPrefixLower + ".x")
+                || lower.equals(minecraftVersionPrefixLower + "x");
     }
 
     private boolean fallbackMatches(String rawJson) {
@@ -269,8 +267,8 @@ public final class UpdateChecker {
             return false;
         }
         return rawJson.contains('"' + minecraftVersion + '"')
-            || rawJson.contains(minecraftVersion)
-            || (minecraftVersionPrefixLower != null && rawJson.toLowerCase(Locale.ROOT).contains(minecraftVersionPrefixLower));
+                || rawJson.contains(minecraftVersion)
+                || (minecraftVersionPrefixLower != null && rawJson.toLowerCase(Locale.ROOT).contains(minecraftVersionPrefixLower));
     }
 
     private static String normalizeMinecraftVersion(String value) {
@@ -325,4 +323,3 @@ public final class UpdateChecker {
         }
     }
 }
-

@@ -25,7 +25,10 @@ import java.util.regex.Pattern;
 /**
  * Loader-neutral locale loader/synchronizer for mod resources.
  *
- * <p>Expected bundled files: {@code /lang/<locale>.properties}, e.g. {@code lang/en_US.properties}.</p>
+ * <p>
+ * Expected bundled files: {@code /lang/<locale>.properties}, e.g.
+ * {@code lang/en_US.properties}.
+ * </p>
  */
 public final class LangLoader {
     public static final String DEFAULT_LOCALE = "en_US";
@@ -305,4 +308,3 @@ public final class LangLoader {
         return locales;
     }
 }
-

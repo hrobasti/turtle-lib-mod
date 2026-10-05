@@ -1,6 +1,5 @@
 package net.kroet.turtlelib.MessageService;
 
-import net.kroet.turtlelib.LangLoader.LangLoader;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +8,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import net.kroet.turtlelib.LangLoader.LangLoader;
 
 /**
- * General localization helper for Fabric/NeoForge based on TurtleLib LangLoader.
+ * General localization helper for Fabric/NeoForge based on TurtleLib
+ * LangLoader.
  *
- * <p>This is the mod-environment counterpart to the Paper MessageService. Since Bukkit and Adventure
- * are not available here, it returns formatted strings that can be forwarded to platform chat APIs.</p>
+ * <p>
+ * This is the mod-environment counterpart to the Paper MessageService. Since
+ * Bukkit and Adventure are not available here, it returns formatted strings
+ * that can be forwarded to platform chat APIs.
+ * </p>
  */
 public class MessageService {
     private static final Pattern MINI_TAG_PATTERN = Pattern.compile("</?[^>]+>");
@@ -33,11 +37,11 @@ public class MessageService {
         this.resourceAnchor = Objects.requireNonNull(resourceAnchor, "resourceAnchor");
         this.langDir = Objects.requireNonNull(langDir, "langDir");
         this.defaultPrefixRaw = defaultPrefixRaw != null && !defaultPrefixRaw.isBlank()
-            ? defaultPrefixRaw
-            : "[<prefix_label>]";
+                ? defaultPrefixRaw
+                : "[<prefix_label>]";
         this.defaultPrefixLabel = defaultPrefixLabel != null && !defaultPrefixLabel.isBlank()
-            ? defaultPrefixLabel
-            : resourceAnchor.getSimpleName();
+                ? defaultPrefixLabel
+                : resourceAnchor.getSimpleName();
         this.prefixRaw = this.defaultPrefixRaw;
         this.prefixLabel = this.defaultPrefixLabel;
     }
@@ -135,15 +139,15 @@ public class MessageService {
     private String applyResolvers(String raw, Map<String, String> replacements) {
         String renderedPrefix = prefixRaw.replace("<prefix_label>", prefixLabel);
         String result = raw
-            .replace("<prefix>", renderedPrefix)
-            .replace("<prefix_label>", prefixLabel);
+                .replace("<prefix>", renderedPrefix)
+                .replace("<prefix_label>", prefixLabel);
 
         for (Map.Entry<String, String> entry : replacements.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue() == null ? "" : entry.getValue();
             result = result
-                .replace("<" + key + ">", value)
-                .replace("{" + key + "}", value);
+                    .replace("<" + key + ">", value)
+                    .replace("{" + key + "}", value);
         }
 
         return result;

@@ -6,7 +6,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Compares semantic versions with support for alpha, beta, rc and dot or dash pre-release delimiters.
+ * Compares semantic versions with support for alpha, beta, rc and dot or dash
+ * pre-release delimiters.
  */
 public final class VersionComparator {
     private VersionComparator() {
@@ -218,4 +219,3 @@ public final class VersionComparator {
         }
     }
 }
-

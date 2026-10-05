@@ -19,10 +19,9 @@ class MessageServiceTest {
         Path langDir = tempDir.resolve("lang");
         Files.createDirectories(langDir);
         Files.writeString(
-            langDir.resolve("en_US.properties"),
-            "ui.prefix=[<prefix_label>]\n" +
-                "hello=<prefix> Hello <name>"
-        );
+                langDir.resolve("en_US.properties"),
+                "ui.prefix=[<prefix_label>]\n" +
+                        "hello=<prefix> Hello <name>");
 
         MessageService service = new MessageService(MessageServiceTest.class, langDir, "[<prefix_label>]", "TurtleLib");
         service.load("en_US");

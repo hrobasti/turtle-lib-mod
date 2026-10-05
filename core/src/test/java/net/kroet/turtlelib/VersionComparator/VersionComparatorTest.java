@@ -1,9 +1,9 @@
 package net.kroet.turtlelib.VersionComparator;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 class VersionComparatorTest {
 
@@ -34,4 +34,3 @@ class VersionComparatorTest {
         assertFalse(VersionComparator.isGreater("1.2.0", "1.2.0a"));
     }
 }
-
