@@ -3,15 +3,15 @@
 ## Authoritative sources
 
 - `config/matrix-targets.json`
-  - Authoritative per target values:
-    - `minecraft`
-    - `java`
-    - `neoforge`
-    - `fabricLoader`
-    - `fabricApi`
-    - `modmenu`
+    - Authoritative per target values:
+        - `minecraft`
+        - `java`
+        - `neoforge`
+        - `fabricLoader`
+        - `fabricApi`
+        - `modmenu`
 - `version.properties`
-  - Authoritative version source (`version`).
+    - Authoritative version source (`version`).
 
 ## Module layout
 

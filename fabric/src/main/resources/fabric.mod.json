@@ -5,10 +5,8 @@
   "name": "TurtleLib",
   "icon": "assets/turtlelib/icon.png",
   "description": "Shared helper library for Fabric/NeoForge mods.",
-  "authors": [
-    "hrobasti"
-  ],
-  "license": "Apache-2.0",
+  "authors": ["kroet.net"],
+  "license": "MIT",
   "contact": {
     "homepage": "https://github.com/hrobasti/turtle-lib-mod"
   },

@@ -1,10 +1,10 @@
-package com.github.hrobasti.turtlelib.UpdateChecker;
+package net.kroet.turtlelib.UpdateChecker;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.github.hrobasti.turtlelib.VersionComparator.VersionComparator;
+import net.kroet.turtlelib.VersionComparator.VersionComparator;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;

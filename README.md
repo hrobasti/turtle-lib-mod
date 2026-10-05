@@ -49,7 +49,7 @@ Parts of the source code and documentation were created with AI assistance.
 
 ## License 📄
 
-Apache-2.0
+MIT
 
 Full license text:
 

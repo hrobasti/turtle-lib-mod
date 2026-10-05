@@ -13,7 +13,7 @@ if (versionFile.exists()) {
 }
 def versionFromFile = versionProperties.getProperty('version')
 
-group = providers.gradleProperty('turtlelib_group').getOrElse('com.github.hrobasti.turtlelib')
+group = providers.gradleProperty('turtlelib_group').getOrElse('net.kroet.turtlelib')
 version = providers.gradleProperty('turtlelib_version').orElse(versionFromFile ?: '0.1').get()
 
 def libNameForFile = (providers.gradleProperty('turtlelib_name').getOrElse('TurtleLib') as String).replaceAll(/[^A-Za-z0-9]/, '')
@@ -52,7 +52,7 @@ tasks.register('coreReleaseJar', Jar) {
         attributes(
             'Implementation-Title': providers.gradleProperty('turtlelib_name').getOrElse('TurtleLib'),
             'Implementation-Version': project.version,
-            'Implementation-Vendor': 'hrobasti'
+            'Implementation-Vendor': 'kroet.net'
         )
     }
 }

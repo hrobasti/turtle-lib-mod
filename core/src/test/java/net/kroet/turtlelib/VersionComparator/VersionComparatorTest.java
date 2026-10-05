@@ -1,4 +1,4 @@
-package com.github.hrobasti.turtlelib.VersionComparator;
+package net.kroet.turtlelib.VersionComparator;
 
 import org.junit.jupiter.api.Test;
 

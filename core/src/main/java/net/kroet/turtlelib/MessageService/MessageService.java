@@ -1,6 +1,6 @@
-package com.github.hrobasti.turtlelib.MessageService;
+package net.kroet.turtlelib.MessageService;
 
-import com.github.hrobasti.turtlelib.LangLoader.LangLoader;
+import net.kroet.turtlelib.LangLoader.LangLoader;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;

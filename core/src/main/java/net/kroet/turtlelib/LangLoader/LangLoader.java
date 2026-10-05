@@ -1,4 +1,4 @@
-package com.github.hrobasti.turtlelib.LangLoader;
+package net.kroet.turtlelib.LangLoader;
 
 import java.io.IOException;
 import java.io.InputStream;

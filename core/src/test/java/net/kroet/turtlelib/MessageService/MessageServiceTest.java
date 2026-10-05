@@ -1,4 +1,4 @@
-package com.github.hrobasti.turtlelib.MessageService;
+package net.kroet.turtlelib.MessageService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

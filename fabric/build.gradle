@@ -30,7 +30,7 @@ def turtleLibDistSourcesDir = layout.projectDirectory.dir('../dist/sources')
 // carries Fabric metadata and packaging, and bundles the compiled core classes/sources.
 def turtleLibCore = project(':turtlelib-core')
 
-group = providers.gradleProperty('turtlelib_group').getOrElse('com.github.hrobasti.turtlelib')
+group = providers.gradleProperty('turtlelib_group').getOrElse('net.kroet.turtlelib')
 version = providers.gradleProperty('turtlelib_version').orElse(versionFromFile ?: '0.1').get()
 
 repositories {
@@ -73,7 +73,7 @@ tasks.named('jar') {
         attributes(
             'Implementation-Title': resolvedTurtleLibName,
             'Implementation-Version': project.version,
-            'Implementation-Vendor': 'hrobasti'
+            'Implementation-Vendor': 'kroet.net'
         )
     }
 }

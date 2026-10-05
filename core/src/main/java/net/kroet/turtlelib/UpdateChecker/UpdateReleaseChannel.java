@@ -1,4 +1,4 @@
-package com.github.hrobasti.turtlelib.UpdateChecker;
+package net.kroet.turtlelib.UpdateChecker;
 
 /**
  * Update channel selection for filtering prerelease tags.

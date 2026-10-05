@@ -1,14 +1,14 @@
 modLoader="javafml"
 loaderVersion="[4,)"
-license="Apache-2.0"
+license="MIT"
 
 [[mods]]
 modId="turtlelib"
 version="${file.jarVersion}"
 displayName="${turtlelib_name}"
 displayURL="https://github.com/hrobasti/turtle-lib-mod"
-logoFile="icon.png"
-authors="hrobasti"
+iconFile="icon.png"
+authors="kroet.net"
 description='''
 Shared helper library for Fabric/NeoForge mods.
 Source: https://github.com/hrobasti/turtle-lib-mod

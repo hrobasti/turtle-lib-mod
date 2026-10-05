@@ -1,4 +1,4 @@
-package com.github.hrobasti.turtlelib.VersionComparator;
+package net.kroet.turtlelib.VersionComparator;
 
 import java.util.ArrayList;
 import java.util.List;
