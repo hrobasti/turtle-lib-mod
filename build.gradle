@@ -1,0 +1,174 @@
+// Repository-level tasks for TurtleLib: matrix validation, tests and the release matrix.
+// Works as the root project of a standalone checkout and as project ':turtle-lib-mod'
+// inside the hrobasti-mods workspace (the workspace root only aggregates these tasks).
+
+// Provides the javaToolchains service used to locate a JDK for the nested matrix builds.
+apply plugin: 'jvm-toolchains'
+apply from: 'gradle/matrix-defaults.gradle'
+
+def matrixTargets = loadMatrixTargets()
+
+def isWindows = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
+// The nested builds run the wrapper of the build this project belongs to (the repository
+// itself when standalone, the workspace root inside hrobasti-mods); both define the same
+// TurtleLib project paths.
+def wrapperCommand = isWindows
+    ? ['cmd', '/c', new File(rootDir, 'gradlew.bat').absolutePath]
+    : [new File(rootDir, 'gradlew').absolutePath]
+
+def expandEnvironmentPlaceholders = { String rawValue ->
+    rawValue.replaceAll(/%([^%]+)%/) { String fullMatch, String variableName ->
+        def envValue = System.getenv(variableName)
+        return envValue != null ? envValue : fullMatch
+    }
+}
+
+// JDK for the nested builds of one Java version. An explicit jdk_<n>_home property or
+// JDK_<n>_HOME environment variable wins; otherwise Gradle's toolchain detection picks an
+// installed JDK of that version (or downloads one via the foojay resolver), so no
+// machine-specific path has to be configured anywhere.
+def resolveJdkHomeForVersion = { int javaVersion ->
+    def propertyName = "jdk_${javaVersion}_home"
+    def environmentName = "JDK_${javaVersion}_HOME"
+    def configuredPath = providers.gradleProperty(propertyName)
+        .orElse(providers.environmentVariable(environmentName))
+        .getOrNull()
+    if (configuredPath == null || configuredPath.isBlank()) {
+        def launcher = javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(javaVersion)
+        }
+        return launcher.get().metadata.installationPath.asFile.absolutePath
+    }
+
+    def expandedPath = expandEnvironmentPlaceholders(configuredPath)
+    if (expandedPath =~ /%[^%]+%/) {
+        throw new GradleException("Unresolved environment placeholder in '${propertyName}'.")
+    }
+
+    def jdkDirectory = file(expandedPath)
+    if (!jdkDirectory.exists()) {
+        throw new GradleException("Configured JDK for Java ${javaVersion} not found at '${expandedPath}'. Check '${propertyName}' or ${environmentName}.")
+    }
+    jdkDirectory.absolutePath
+}
+
+def nestedBuildCommand = { int javaVersion, List<String> arguments ->
+    def command = new ArrayList<String>(wrapperCommand)
+    command << "-Dorg.gradle.java.home=${resolveJdkHomeForVersion(javaVersion)}".toString()
+    command.addAll(arguments)
+    command
+}
+
+def verifyMatrixTargets = tasks.register('verifyMatrixTargets') {
+    group = 'verification'
+    description = 'Validates the TurtleLib matrix targets in config/matrix-targets.json.'
+
+    doLast {
+        def duplicateMinecraftTargets = matrixTargets
+            .groupBy { it.minecraft }
+            .findAll { _, entries -> entries.size() > 1 }
+            .keySet()
+        if (!duplicateMinecraftTargets.isEmpty()) {
+            throw new GradleException("Duplicate TurtleLib matrix targets for minecraft versions: ${duplicateMinecraftTargets.join(', ')}")
+        }
+
+        def invalidFabricApiTargets = matrixTargets.findAll { !it.fabricApi.contains("+${it.minecraft}") }
+        if (!invalidFabricApiTargets.isEmpty()) {
+            throw new GradleException("Fabric API entries must include '+<minecraft>' suffix. Invalid TurtleLib matrix entries: ${invalidFabricApiTargets.collect { it.minecraft }.join(', ')}")
+        }
+    }
+}
+
+tasks.register('testTurtleLib') {
+    group = 'verification'
+    description = 'Runs all TurtleLib unit tests (shared core module).'
+    dependsOn(':turtlelib-core:test')
+}
+
+def neoForgeMatrixBuildTasks = matrixTargets.collect { target ->
+    def normalizedMc = target.minecraft.replace('.', '_')
+    def normalizedNeo = target.neoforge.replace('.', '_').replace('-', '_')
+    def taskName = "buildTurtleLibNeoForgeMc${normalizedMc}Nf${normalizedNeo}"
+
+    tasks.register(taskName, Exec) {
+        group = 'build'
+        description = "Builds the TurtleLib NeoForge jar for MC ${target.minecraft} with NeoForge ${target.neoforge} and Java ${target.java}."
+        workingDir = rootDir
+        commandLine nestedBuildCommand(target.java, [
+            ':turtlelib-neoforge:jar',
+            ':turtlelib-neoforge:sourcesJar',
+            '--console=plain',
+            '--no-daemon',
+            "--gradle-user-home=${file("neoforge/isolated/gradle-user-home/mc${target.minecraft}-neoforge${target.neoforge}").absolutePath}",
+            "-Pjava_language_version=${target.java}",
+            "-Pturtlelib_minecraft_version=${target.minecraft}",
+            "-Pturtlelib_neoforge_version=${target.neoforge}"
+        ].collect { it.toString() })
+    }
+    taskName
+}
+
+def fabricMatrixBuildTasks = matrixTargets.collect { target ->
+    def normalizedMc = target.minecraft.replace('.', '_')
+    def normalizedLoader = target.fabricLoader.replace('.', '_').replace('-', '_').replace('+', '_')
+    def taskName = "buildTurtleLibFabricMc${normalizedMc}Loader${normalizedLoader}"
+
+    tasks.register(taskName, Exec) {
+        group = 'build'
+        description = "Builds the TurtleLib Fabric jar for MC ${target.minecraft} with loader ${target.fabricLoader} and Java ${target.java}."
+        workingDir = rootDir
+        commandLine nestedBuildCommand(target.java, [
+            ':turtlelib-fabric:jar',
+            ':turtlelib-fabric:sourcesJar',
+            '--console=plain',
+            '--no-daemon',
+            "--gradle-user-home=${file("fabric/isolated/gradle-user-home/mc${target.minecraft}-loader${target.fabricLoader}").absolutePath}",
+            "-Pjava_language_version=${target.java}",
+            "-Pturtlelib_minecraft_version=${target.minecraft}",
+            "-Pturtlelib_fabric_loader_version=${target.fabricLoader}"
+        ].collect { it.toString() })
+    }
+    taskName
+}
+
+def cleanTurtleLibRelease = tasks.register('cleanTurtleLibRelease', Delete) {
+    group = 'build'
+    description = 'Deletes TurtleLib release output folders (dist + loader build libs) before a new release build.'
+    delete layout.projectDirectory.dir('dist')
+    delete layout.projectDirectory.dir('neoforge/build/libs')
+    delete layout.projectDirectory.dir('fabric/build/libs')
+}
+
+tasks.register('buildTurtleLibNeoForgeMatrix') {
+    group = 'build'
+    description = 'Builds TurtleLib NeoForge matrix jars for all configured targets.'
+    dependsOn(verifyMatrixTargets)
+    dependsOn(neoForgeMatrixBuildTasks)
+}
+
+tasks.register('buildTurtleLibFabricMatrix') {
+    group = 'build'
+    description = 'Builds TurtleLib Fabric matrix jars for all configured targets.'
+    dependsOn(verifyMatrixTargets)
+    dependsOn(fabricMatrixBuildTasks)
+}
+
+// The loader jars land in dist directly (destinationDirectory), so no collect/copy step is needed.
+tasks.register('releaseTurtleLib') {
+    group = 'build'
+    description = 'Clean release build: all TurtleLib matrix jars plus the loader-neutral core jar, into dist.'
+    dependsOn(cleanTurtleLibRelease)
+    dependsOn('buildTurtleLibNeoForgeMatrix', 'buildTurtleLibFabricMatrix')
+    dependsOn(':turtlelib-core:coreReleaseJar', ':turtlelib-core:coreReleaseSourcesJar')
+}
+
+([neoForgeMatrixBuildTasks, fabricMatrixBuildTasks].flatten() + ['buildTurtleLibNeoForgeMatrix', 'buildTurtleLibFabricMatrix']).each { name ->
+    tasks.named(name) { mustRunAfter(cleanTurtleLibRelease) }
+}
+
+// The core release jars live in another project; order them after the clean once it is configured.
+gradle.projectsEvaluated {
+    project(':turtlelib-core').tasks.matching { it.name in ['coreReleaseJar', 'coreReleaseSourcesJar'] }.configureEach {
+        mustRunAfter(cleanTurtleLibRelease)
+    }
+}

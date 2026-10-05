@@ -2,6 +2,10 @@ plugins {
     id 'java-library'
 }
 
+apply from: file('../gradle/matrix-defaults.gradle')
+apply from: file('../gradle/java-conventions.gradle')
+applyJavaConventions(resolveMatrixTarget('turtlelib_minecraft_version'))
+
 def versionProperties = new Properties()
 def versionFile = file('../version.properties')
 if (versionFile.exists()) {
@@ -12,9 +16,8 @@ def versionFromFile = versionProperties.getProperty('version')
 group = providers.gradleProperty('turtlelib_group').getOrElse('com.github.hrobasti.turtlelib')
 version = providers.gradleProperty('turtlelib_version').orElse(versionFromFile ?: '0.1').get()
 
-java {
-    withSourcesJar()
-}
+def libNameForFile = (providers.gradleProperty('turtlelib_name').getOrElse('TurtleLib') as String).replaceAll(/[^A-Za-z0-9]/, '')
+def modLicenseFile = file('../LICENSE')
 
 repositories {
     mavenCentral()
@@ -28,4 +31,41 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+// Loader-neutral developer artifact attached to every GitHub release. Consumer mods compile
+// against it in standalone checkouts; the file name must stay "<name>_<version>_core.jar" so
+// their Ivy pattern '[revision]/[artifact]_[revision]_core(-[classifier]).[ext]' resolves it.
+// Separate from the regular jar task so ordinary workspace builds never write into dist/.
+tasks.register('coreReleaseJar', Jar) {
+    group = 'build'
+    description = 'Builds the loader-neutral TurtleLib core jar (developer release asset) into dist.'
+    from(sourceSets.main.output)
+    from(modLicenseFile) {
+        into 'META-INF'
+        rename { 'LICENSE' }
+    }
+
+    destinationDirectory = layout.projectDirectory.dir('../dist')
+    archiveFileName = "${libNameForFile}_${project.version}_core.jar"
+    manifest {
+        attributes(
+            'Implementation-Title': providers.gradleProperty('turtlelib_name').getOrElse('TurtleLib'),
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': 'hrobasti'
+        )
+    }
+}
+
+tasks.register('coreReleaseSourcesJar', Jar) {
+    group = 'build'
+    description = 'Builds the TurtleLib core sources jar (developer release asset) into dist/sources.'
+    from(sourceSets.main.allSource)
+    from(modLicenseFile) {
+        into 'META-INF'
+        rename { 'LICENSE' }
+    }
+
+    destinationDirectory = layout.projectDirectory.dir('../dist/sources')
+    archiveFileName = "${libNameForFile}_${project.version}_core-source.jar"
 }

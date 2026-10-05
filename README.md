@@ -23,12 +23,17 @@ If TurtleLib is missing, dependent mods may fail to load.
 
 ## Build quickstart (developers) 🛠️
 
-Use the workspace root wrapper for all build/test tasks.
+This repository is a standalone Gradle build. Clone it and use its own wrapper; no other repository is needed. A JDK 17+ must be installed to start Gradle. The Java toolchain required for compiling is detected automatically or downloaded.
 
-- TurtleLib full matrix build: `./gradlew releaseTurtleLib`
-- Typical checks: `./gradlew verifyMatrixTargets`, `./gradlew tasks`
+- Build and test: `./gradlew build`, `./gradlew testTurtleLib`
+- Validate the build matrix: `./gradlew verifyMatrixTargets`
+- Full release build (all matrix targets) into `dist/`: `./gradlew releaseTurtleLib`
 
-No loader-local wrapper scripts are required.
+Minecraft, Java and loader versions come from [`config/matrix-targets.json`](config/matrix-targets.json). Without parameters, builds use the first target in that file.
+
+Every release also produces `TurtleLib_<version>_core.jar`. This is the loader-neutral library that other mods compile against, published as a GitHub release asset. It is a developer artifact and must not be installed into the `mods/` folder.
+
+Optional: for the nested matrix builds, a specific JDK per Java version can be set via the Gradle property `jdk_<n>_home` or the environment variable `JDK_<n>_HOME`, e.g. `JDK_25_HOME`. Without it, they run on the current JVM.
 
 ## AI support & privacy transparency 🤖
 

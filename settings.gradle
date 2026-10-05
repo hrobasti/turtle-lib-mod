@@ -1,0 +1,22 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'turtle-lib-mod'
+
+// Same project names as in the hrobasti-mods workspace, so the module build scripts
+// run unchanged in a standalone checkout and inside the workspace.
+include 'turtlelib-core'
+include 'turtlelib-fabric'
+include 'turtlelib-neoforge'
+
+project(':turtlelib-core').projectDir = file('core')
+project(':turtlelib-fabric').projectDir = file('fabric')
+project(':turtlelib-neoforge').projectDir = file('neoforge')

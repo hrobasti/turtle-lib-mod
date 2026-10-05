@@ -24,14 +24,15 @@
 
 ## Derived locations
 
-- Root workspace orchestration (`../..` via root `build.gradle`) derives matrix tasks from this file.
-- Loader-specific module builds derive their effective versions from matrix target selection.
+- `gradle/matrix-defaults.gradle` reads this file for every module build. Without `-Pturtlelib_minecraft_version`, the first target is the default. Explicit `-Pturtlelib_*` values override single versions.
+- The repository root `build.gradle` derives the matrix release tasks (`releaseTurtleLib`) from this file.
+- No copies of these versions exist in `gradle.properties`, neither in this repository nor in the hrobasti-mods workspace root.
 
 ## Change workflow
 
 1. Change `config/matrix-targets.json` first.
 2. Keep docs/build metadata in sync after the matrix update.
-3. Run root `verifyMatrixTargets` before merge.
+3. Run `./gradlew verifyMatrixTargets` before merge. Inside the hrobasti-mods workspace, the root task additionally checks that all mods agree on the first target's Minecraft/Java versions.
 
 ## TurtleLib-specific policy
 
