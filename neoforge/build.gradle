@@ -63,10 +63,6 @@ tasks.named('processResources', ProcessResources) {
     from('../fabric/src/main/resources') {
         include 'assets/turtlelib/icon.png'
     }
-
-    from('../fabric/src/main/resources/assets/turtlelib/icon.png') {
-        rename { 'icon.png' }
-    }
 }
 
 // jar / sourcesJar write directly into dist via destinationDirectory; no copy-into-dist

@@ -3,12 +3,21 @@
   "id": "turtlelib",
   "version": "${version}",
   "name": "TurtleLib",
-  "icon": "assets/turtlelib/icon.png",
-  "description": "Shared helper library for Fabric/NeoForge mods.",
-  "authors": ["kroet.net"],
+  "description": "Helper library for Fabric and NeoForge mods by kroet.net. Adds no gameplay on its own; install it when a mod requires it.",
+  "authors": [
+    {
+      "name": "kroet.net",
+      "contact": {
+        "homepage": "https://kroet.net"
+      }
+    }
+  ],
   "license": "MIT",
+  "icon": "assets/turtlelib/icon.png",
   "contact": {
-    "homepage": "https://github.com/hrobasti/turtle-lib-mod"
+    "homepage": "https://kroet.net",
+    "sources": "https://github.com/hrobasti/turtle-lib-mod",
+    "issues": "https://github.com/hrobasti/turtle-lib-mod/issues"
   },
   "environment": "*",
   "depends": {
@@ -19,12 +28,10 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.source": "https://github.com/hrobasti/turtle-lib-mod",
         "modmenu.github_sponsors": "https://github.com/sponsors/hrobasti",
-        "modmenu.kofi": "https://ko-fi.com/hrobasti"
+        "modmenu.kofi": "https://ko-fi.com/kroet"
       },
-      "badges": ["library"],
-      "update_checker": false
+      "badges": ["library"]
     }
   }
 }

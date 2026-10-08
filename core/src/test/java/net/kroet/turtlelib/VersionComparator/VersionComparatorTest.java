@@ -1,5 +1,6 @@
 package net.kroet.turtlelib.VersionComparator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,5 +33,19 @@ class VersionComparatorTest {
         assertTrue(VersionComparator.isGreater("1.2.0b", "1.2.0a"));
         assertTrue(VersionComparator.isGreater("1.2.0a", "1.2.0"));
         assertFalse(VersionComparator.isGreater("1.2.0", "1.2.0a"));
+    }
+
+    @Test
+    void ignoresLeadingVAndBuildMetadata() {
+        assertEquals(0, VersionComparator.compare("v2.0.0", "2.0.0"));
+        assertEquals(0, VersionComparator.compare("2.0.0+26.3", "2.0.0"));
+        assertTrue(VersionComparator.isGreater("v2.1.0", "2.0.0"));
+    }
+
+    @Test
+    void comparesPrereleaseNumbersAfterSeparators() {
+        assertTrue(VersionComparator.isGreater("2.0.0-beta.2", "2.0.0-beta.1"));
+        assertTrue(VersionComparator.isGreater("2.0.0-beta-10", "2.0.0-beta-9"));
+        assertTrue(VersionComparator.isGreater("2.0.0", "2.0.0-rc.1"));
     }
 }

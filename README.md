@@ -6,8 +6,6 @@ TurtleLib is a dependency library designed to keep mod code cleaner and more reu
 
 ## Features ✨
 
-- Locale loading and synchronization (`LangLoader`)
-- Localized message formatting (`MessageService`)
 - Provider-based update checks (`UpdateChecker`)
 - Deterministic version comparison (`VersionComparator`)
 - Shared behavior across Fabric and NeoForge modules

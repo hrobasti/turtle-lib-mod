@@ -36,6 +36,14 @@ public final class VersionComparator {
 
         static Version parse(String rawInput) {
             String raw = rawInput == null ? "" : rawInput.trim().toLowerCase(Locale.ROOT);
+            if (raw.length() > 1 && raw.charAt(0) == 'v' && Character.isDigit(raw.charAt(1))) {
+                raw = raw.substring(1);
+            }
+            // Build metadata ("+26.3") never changes the version's precedence.
+            int plusIndex = raw.indexOf('+');
+            if (plusIndex >= 0) {
+                raw = raw.substring(0, plusIndex);
+            }
             if (raw.isEmpty()) {
                 return new Version(List.of(0), null, null);
             }
@@ -182,10 +190,18 @@ public final class VersionComparator {
             String parsedLabel = i == 0 ? value : value.substring(0, i);
             int parsedNumber = 0;
 
-            if (i < value.length()) {
-                String numberPart = value.substring(i);
+            // The number may follow a separator: "beta.2", "beta-2", "beta2".
+            int start = i;
+            while (start < value.length() && !Character.isDigit(value.charAt(start))) {
+                start++;
+            }
+            int end = start;
+            while (end < value.length() && Character.isDigit(value.charAt(end))) {
+                end++;
+            }
+            if (start < end) {
                 try {
-                    parsedNumber = Integer.parseInt(numberPart);
+                    parsedNumber = Integer.parseInt(value.substring(start, end));
                 } catch (NumberFormatException ignored) {
                     parsedNumber = 0;
                 }
