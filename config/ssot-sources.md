@@ -36,4 +36,4 @@
 
 ## TurtleLib-specific policy
 
-- NeoForge selection per MC branch is stable-first; if no stable exists, use latest beta.
+- NeoForge selection per MC branch: the oldest stable release (the jars only set a minimum NeoForge version, so this fits the most installations); if no stable exists, use the latest beta.
